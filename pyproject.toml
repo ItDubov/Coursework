@@ -7,8 +7,35 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
+pandas = "^2.2.3"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+skip-string-normalization = true
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+include_trailing_comma = true
+known_third_party = ["pandas", "json", "logging", "datetime", "groupby",]
+force_grid_wrap = 0
+combine_as_imports = true
+
+[tool.mypy]
+python_version = 3.9
+ignore_missing_imports = true
+strict = true
+warn_unused_configs = true
+show_error_codes = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_return_any = true
+warn_unreachable = true

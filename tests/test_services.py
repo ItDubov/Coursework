@@ -1,4 +1,5 @@
 import json
+
 from src.services import analyze_cashback_categories
 
 
@@ -12,9 +13,9 @@ def test_analyze_cashback_categories():
     ]
 
     expected_result = {
-        "Супермаркеты": 25.0,   # 2500 * 0.01
-        "Рестораны": 5.0,       # 500 * 0.01
-        "Кино": 2.0             # 200 * 0.01
+        "Супермаркеты": 25.0,  # 2500 * 0.01
+        "Рестораны": 5.0,  # 500 * 0.01
+        "Кино": 2.0,  # 200 * 0.01
     }
 
     result = analyze_cashback_categories(transactions_data, 2023, 5)

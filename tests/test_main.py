@@ -1,5 +1,6 @@
 import datetime
-from src.main import get_greeting, get_data_json
+
+from src.main import get_data_json, get_greeting
 
 
 def test_get_greeting():
