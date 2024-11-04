@@ -4,16 +4,18 @@ from datetime import datetime
 from itertools import groupby
 
 # Настройка логгирования
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
 # Фильтрация транзакций по дате
 def filter_transactions_by_date(transactions, year, month):
     """Фильтрует транзакции по указанному году и месяцу."""
-    return filter(lambda t: datetime.fromisoformat(t['date']).year == year
-                  and datetime.fromisoformat(t['date']).month == month,
-                  transactions)
+    return filter(lambda t: datetime.fromisoformat(t["date"]).year == year
+        and datetime.fromisoformat(t["date"]).month == month,transactions,
+    )
 
 
 # Рассчёт кешбэка
@@ -25,10 +27,13 @@ def calculate_cashback(amount, rate=0.01):
 # Группировка и суммирование кешбэка по категориям
 def summarize_cashback_by_category(transactions):
     """Возвращает словарь с суммой кешбэка для каждой категории."""
-    grouped_transactions = groupby(sorted(transactions, key=lambda x: x['category']),
-                                   key=lambda x: x['category'])
-    return {category: sum(calculate_cashback(t['amount']) for t in trans)
-            for category, trans in grouped_transactions}
+    grouped_transactions = groupby(
+        sorted(transactions, key=lambda x: x["category"]), key=lambda x: x["category"]
+    )
+    return {
+        category: sum(calculate_cashback(t["amount"]) for t in trans)
+        for category, trans in grouped_transactions
+    }
 
 
 def analyze_cashback_categories(data, year, month):
@@ -50,3 +55,4 @@ def analyze_cashback_categories(data, year, month):
 
     logger.info("Анализ завершён")
     return json.dumps(cashback_summary, ensure_ascii=False, indent=4)
+
