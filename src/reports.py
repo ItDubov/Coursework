@@ -1,11 +1,13 @@
-import pandas as pd
 import logging
 from datetime import datetime, timedelta
 from functools import wraps
 from typing import Optional
+import pandas as pd
 
 # Настройка логгирования
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -30,7 +32,9 @@ def save_report(func):
 
 
 @save_report
-def spending_by_category(transactions: pd.DataFrame, category: str, date: Optional[str] = None) -> pd.DataFrame:
+def spending_by_category(
+    transactions: pd.DataFrame, category: str, date: Optional[str] = None
+) -> pd.DataFrame:
     """
     Возвращает траты по категории за последние три месяца от переданной даты.
 
@@ -50,14 +54,15 @@ def spending_by_category(transactions: pd.DataFrame, category: str, date: Option
 
     # Фильтрация транзакций по дате и категории
     filtered_transactions = transactions[
-        (transactions['category'] == category) &
-        (transactions['date'] >= start_date) &
-        (transactions['date'] <= date)
-        ]
+        (transactions["Категория"] == category)
+        & (transactions["Дата операции"] >= start_date)
+        & (transactions["Дата операции"] <= date)
+    ]
 
     # Логирование информации
     logger.info(
         f"Формирование отчета по категории '{category}' "
-        f"за период с {start_date.strftime('%Y-%m-%d')} по {date.strftime('%Y-%m-%d')}")
+        f"за период с {start_date.strftime('%Y-%m-%d')} по {date.strftime('%Y-%m-%d')}"
+    )
 
     return filtered_transactions
