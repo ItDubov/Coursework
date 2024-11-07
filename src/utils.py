@@ -5,6 +5,7 @@ import logging
 # Настройка логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+
 def get_greeting(current_time: datetime) -> str:
     """Возвращает приветствие в зависимости от времени суток."""
     hour = current_time.hour
@@ -17,39 +18,50 @@ def get_greeting(current_time: datetime) -> str:
     else:
         return "Доброй ночи"
 
-def load_transactions_from_excel(file_path: str) -> list:
-    """Загружает транзакции из Excel файла."""
+
+def load_transactions_from_excel(file_path: str) -> pd.DataFrame:
+    """Загружает транзакции из Excel файла и возвращает DataFrame."""
     try:
-        data = pd.read_excel(file_path, engine='openpyxl')
-        return data.to_dict(orient="records")  # Преобразуем в список словарей
+        transactions = pd.read_excel(file_path, engine='openpyxl')
+        # Преобразуем даты в нужный формат
+        transactions["Дата операции"] = pd.to_datetime(
+            transactions["Дата операции"], format="%d.%m.%Y %H:%M:%S", errors='coerce', dayfirst=True
+        )
+        return transactions
     except Exception as e:
         logging.error(f"Ошибка при загрузке транзакций из Excel: {e}")
-        return []
+        return pd.DataFrame()
 
-def get_card_data(transactions: list) -> list:
+def get_card_data(transactions: pd.DataFrame) -> list:
     """Возвращает информацию о картах на основе данных транзакций."""
-    cards = {}
-    for transaction in transactions:
-        card_number = transaction.get("card_number")
-        amount = transaction.get("amount", 0)
-
-        if card_number not in cards:
-            cards[card_number] = {"total_spent": 0, "transactions": []}
-
-        cards[card_number]["total_spent"] += amount
-        cards[card_number]["transactions"].append(amount)
-
     card_data = []
-    for card_number, data in cards.items():
-        cashback = round(data["total_spent"] * 0.01, 2)  # 1% кэшбэк
-        card_data.append({
-            "last_digits": str(card_number)[-4:],  # Последние 4 цифры номера карты
-            "total_spent": round(data["total_spent"], 2),  # Общая сумма
-            "cashback": cashback  # Кэшбек
-        })
+
+    # Проходим по строкам DataFrame и собираем информацию о картах
+    for _, transaction in transactions.iterrows():
+        card_number = transaction["Номер карты"]  # Теперь обращаемся как к столбцу DataFrame
+        amount = transaction.get("Сумма операции", 0)  # Получаем сумму транзакции
+
+        # Собираем информацию о карте
+        card_info = {
+            "last_digits": str(card_number)[-4:],  # Последние 4 цифры карты
+            "amount": amount  # Добавляем сумму для примера
+        }
+        card_data.append(card_info)
+
     return card_data
 
-def get_top_transactions(transactions: list) -> list:
+
+def get_top_transactions(transactions: pd.DataFrame) -> list:
     """Возвращает топ-5 транзакций по сумме."""
-    top_transactions = sorted(transactions, key=lambda x: x["amount"], reverse=True)[:5]
-    return [{"date": t["date"], "amount": t["amount"], "description": t["description"]} for t in top_transactions]
+    # Сортируем транзакции по сумме в порядке убывания и берем первые 5
+    top_transactions = transactions.sort_values(by="Сумма операции", ascending=False).head(5)
+
+    # Формируем список словарей для вывода
+    return [
+        {
+            "date": row["Дата операции"],
+            "amount": row["Сумма операции"],
+            "description": row.get("Описание", "")
+        }
+        for _, row in top_transactions.iterrows()
+    ]

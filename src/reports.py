@@ -54,9 +54,9 @@ def spending_by_category(
 
     # Фильтрация транзакций по дате и категории
     filtered_transactions = transactions[
-        (transactions["category"] == category)
-        & (transactions["date"] >= start_date)
-        & (transactions["date"] <= date)
+        (transactions["Категория"] == category)
+        & (transactions["Дата операции"] >= start_date)
+        & (transactions["Дата операции"] <= date)
     ]
 
     # Логирование информации
