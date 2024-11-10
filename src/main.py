@@ -7,7 +7,8 @@ import logging
 
 if __name__ == "__main__":
     # Вывод главной страницы
-    print(main_page_view("2023-11-01 10:00:00"))
+    print(main_page_view())
+
 
     file_path = OPERATIONS_PATH
     year = 2021
@@ -21,7 +22,7 @@ if __name__ == "__main__":
         result = analyze_cashback_categories(file_path, year, month)
         print("Отчет по кешбэку:", result)
 
-        category = "Продукты"  # Укажите категорию для анализа
+        category = "Супермаркеты"  # Укажите категорию для анализа
         date = "2021-11-01"  # Опциональная дата
 
         # Генерация и сохранение отчета по тратам по категории
