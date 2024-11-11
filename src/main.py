@@ -9,7 +9,6 @@ if __name__ == "__main__":
     # Вывод главной страницы
     print(main_page_view())
 
-
     file_path = OPERATIONS_PATH
     year = 2021
     month = 11

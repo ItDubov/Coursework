@@ -23,6 +23,7 @@ def get_greeting() -> str:
     else:
         return "Доброй ночи"
 
+
 def load_transactions_from_excel(file_path: str) -> pd.DataFrame:
     """Загружает транзакции из Excel файла и возвращает DataFrame."""
     try:
@@ -36,8 +37,10 @@ def load_transactions_from_excel(file_path: str) -> pd.DataFrame:
         logging.error(f"Ошибка при загрузке транзакций из Excel: {e}")
         return pd.DataFrame()
 
+
 # Формируем путь до директории модуля
 CURRENT_DIR = os.path.dirname(__file__)
+
 
 def load_user_settings(file_path: str) -> dict:
     """Загружает настройки пользователя из JSON файла."""

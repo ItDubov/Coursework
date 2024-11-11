@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime, timedelta
 from functools import wraps
-from typing import Optional, Callable, Union
+from typing import Optional, Callable
 import pandas as pd
 
 # Настройка логирования
@@ -9,6 +9,7 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 
 def save_report(filename: Optional[str] = None) -> Callable:
     """Декоратор для сохранения отчета в файл.
@@ -38,6 +39,7 @@ def save_report(filename: Optional[str] = None) -> Callable:
         return decorator(filename)
 
     return decorator
+
 
 # Пример использования с указанным именем файла
 @save_report("output.json")

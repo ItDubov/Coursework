@@ -9,6 +9,7 @@ load_dotenv()
 # Настройка логгирования
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
+
 def get_currency_rates(currencies: list) -> list:
     """Получает курсы валют и переводит их сразу в российские рубли."""
     api_key_currency = os.getenv("API_KEY_RATES")

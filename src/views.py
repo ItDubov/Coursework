@@ -13,6 +13,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 CURRENT_DIR = os.path.dirname(__file__)
 OPERATIONS_PATH = os.path.join(CURRENT_DIR, '..', 'data', 'operations.xlsx')
 
+
 def convert_timestamps_to_strings(data):
     """Рекурсивно преобразует все объекты Timestamp в строки в переданной структуре данных."""
     if isinstance(data, dict):
@@ -23,6 +24,7 @@ def convert_timestamps_to_strings(data):
         return data.strftime("%Y-%m-%d %H:%M:%S") if pd.notna(data) else None
     else:
         return data
+
 
 def filter_transactions(transactions: pd.DataFrame, date_time_str: str) -> pd.DataFrame:
     """Фильтрует транзакции с начала месяца до указанной даты."""
