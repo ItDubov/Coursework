@@ -104,6 +104,3 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(len(top_transactions), 3)
         self.assertEqual(top_transactions[0]["amount"], 300)
         self.assertEqual(top_transactions[1]["description"], "Оплата 2")
-
-if __name__ == "__main__":
-    unittest.main()
