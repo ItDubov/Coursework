@@ -2,7 +2,7 @@ import pytest
 import os
 import pandas as pd
 from datetime import datetime
-from src.reports import save_report, spending_by_category  # Замените main_module на имя вашего модуля
+from src.reports import save_report, spending_by_category
 
 
 # Создание фикстуры с примерными данными транзакций
@@ -58,7 +58,17 @@ def test_save_report_decorator(sample_transactions):
 
     # Загружаем данные из файла и проверяем их корректность
     saved_data = pd.read_json(output_filename)
-    pd.testing.assert_frame_equal(saved_data, sample_transactions)
+
+    # Преобразуем столбец "Дата операции" из обоих DataFrame в datetime
+    # Если данные представлены как Unix timestamps (миллисекунды), преобразуем их в datetime
+    if saved_data["Дата операции"].dtype == 'int64':
+        saved_data["Дата операции"] = pd.to_datetime(saved_data["Дата операции"], unit='ms')
+    saved_data["Дата операции"] = saved_data["Дата операции"].dt.strftime('%Y-%m-%d %H:%M:%S')
+
+    sample_transactions["Дата операции"] = sample_transactions["Дата операции"].dt.strftime('%Y-%m-%d %H:%M:%S')
+
+    # Сравниваем DataFrame с исходными данными с учетом точности до секунд
+    pd.testing.assert_frame_equal(saved_data, sample_transactions, check_like=True)
 
     # Удаляем тестовый файл после проверки
     os.remove(output_filename)
