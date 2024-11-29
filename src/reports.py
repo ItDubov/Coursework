@@ -1,37 +1,48 @@
 import logging
 from datetime import datetime, timedelta
 from functools import wraps
-from typing import Optional
+from typing import Optional, Callable
 import pandas as pd
 
-# Настройка логгирования
+# Настройка логирования
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 
-def save_report(func):
-    """Декоратор для записи отчета в файл."""
+def save_report(filename: Optional[str] = None) -> Callable:
+    """Декоратор для сохранения отчета в файл.
 
-    @wraps(func)
-    def wrapper(*args, filename: Optional[str] = None, **kwargs):
-        result = func(*args, **kwargs)
+    :param filename: Имя файла для сохранения отчета (опционально)
+    :return: Декорированная функция
+    """
 
-        # Имя файла по умолчанию
-        if filename is None:
-            filename = f"report_{func.__name__}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            result = func(*args, **kwargs)
 
-        # Сохранение результата в файл
-        result.to_json(filename, orient="records", force_ascii=False, indent=4)
-        logger.info(f"Отчет сохранен в файл: {filename}")
+            # Используем имя файла по умолчанию, если не указано
+            report_filename = filename or f"report_{func.__name__}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
 
-        return result
+            # Сохранение результата в файл
+            result.to_json(report_filename, orient="records", force_ascii=False, indent=4)
+            logger.info(f"Отчет сохранен в файл: {report_filename}")
 
-    return wrapper
+            return result
+
+        return wrapper
+
+    # Если декоратор вызывается без скобок
+    if callable(filename):
+        return decorator(filename)
+
+    return decorator
 
 
-@save_report
+# Пример использования с указанным именем файла
+@save_report("output.json")
 def spending_by_category(
     transactions: pd.DataFrame, category: str, date: Optional[str] = None
 ) -> pd.DataFrame:

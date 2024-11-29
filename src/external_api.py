@@ -11,35 +11,43 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 
 def get_currency_rates(currencies: list) -> list:
-    """Получает курсы валют из внешнего API."""
-    api_key = os.getenv("API_KEY_RATES")
-    url = f"https://v6.exchangerate-api.com/v6/{api_key}/latest/USD"
+    """Получает курсы валют и переводит их сразу в российские рубли."""
+    api_key_currency = os.getenv("API_KEY_RATES")
+    result = []
 
-    try:
-        response = requests.get(url)
-        response.raise_for_status()  # Проверка на ошибки ответа
-        data = response.json()
+    # Цикл по каждой валюте из списка currencies
+    for curr in currencies:
+        url = f"https://v6.exchangerate-api.com/v6/{api_key_currency}/latest/{curr}"
 
-        # Проверка на наличие ключа 'rates'
-        if 'rates' not in data:
-            logging.error("Ответ API не содержит ключ 'rates'.")
-            return [{"currency": curr, "rate": None} for curr in currencies]
+        try:
+            response = requests.get(url)
+            response.raise_for_status()  # Проверка на ошибки ответа
+            data = response.json()
 
-        # Извлечение курсов для запрошенных валют
-        return [{"currency": curr, "rate": data["rates"].get(curr)} for curr in currencies]
+            # Проверка на наличие ключа 'conversion_rates' и курса RUB
+            if 'conversion_rates' not in data or 'RUB' not in data['conversion_rates']:
+                logging.error(f"Курс RUB отсутствует в данных API для валюты {curr}.")
+                result.append({"currency": curr, "rate_in_rub": None})
+                continue
 
-    except requests.RequestException as e:
-        logging.error(f"Ошибка при получении курсов валют: {e}")
-        return [{"currency": curr, "rate": None} for curr in currencies]
+            # Получение курса RUB и добавление в результат
+            rub_rate = data['conversion_rates']['RUB']
+            result.append({"currency": curr, "rate_in_rub": rub_rate})
+
+        except requests.RequestException as e:
+            logging.error(f"Ошибка при получении курса валюты {curr}: {e}")
+            result.append({"currency": curr, "rate_in_rub": None})
+
+    return result
 
 
 def get_stock_prices(stocks: list) -> list:
     """Получает цены акций из внешнего API."""
-    api_key = os.getenv("API_KEY_PRICES")
+    api_key_prices = os.getenv("API_KEY_PRICES")
     stock_data = []
 
     for stock in stocks:
-        url = f"https://finnhub.io/api/v1/quote?symbol={stock}&token={api_key}"
+        url = f"https://finnhub.io/api/v1/quote?symbol={stock}&token={api_key_prices}"
         try:
             response = requests.get(url)
             response.raise_for_status()

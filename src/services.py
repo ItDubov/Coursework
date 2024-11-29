@@ -1,6 +1,5 @@
 import json
 import logging
-from datetime import datetime
 import pandas as pd
 from src.utils import load_transactions_from_excel
 
@@ -10,6 +9,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 # Функция для фильтрации транзакций по году и месяцу
 def filter_transactions_by_date(transactions: pd.DataFrame, year: int, month: int) -> pd.DataFrame:
     """Фильтрует транзакции по указанному году и месяцу."""
@@ -17,10 +17,12 @@ def filter_transactions_by_date(transactions: pd.DataFrame, year: int, month: in
     return transactions[(transactions["Дата операции"].dt.year == year) &
                         (transactions["Дата операции"].dt.month == month)]
 
+
 # Функция для расчёта кешбэка
 def calculate_cashback(amount: float, rate: float = 0.01) -> float:
     """Вычисляет кешбэк по сумме и проценту."""
     return amount * rate
+
 
 # Функция для группировки и суммирования кешбэка по категориям
 def summarize_cashback_by_category(transactions: pd.DataFrame) -> dict:
@@ -33,6 +35,7 @@ def summarize_cashback_by_category(transactions: pd.DataFrame) -> dict:
         lambda x: sum(calculate_cashback(amount) for amount in x)
     ).to_dict()
     return cashback_summary
+
 
 # Основная функция для анализа категорий кешбэка
 def analyze_cashback_categories(file_path: str, year: int, month: int) -> str:
